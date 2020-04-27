@@ -7,11 +7,12 @@ import './App.css';
 
 import Login from './components/Login';
 import ChatView from './components/ChatView';
+import Logout from './components/Logout';
 
 
 function App() {
   const [socket, setSocket] = useState(io('localhost:8000'));
-  const [userName, handleUserName] = useState('null');
+  const [userName, handleUserName] = useState(null);
   console.log(userName);
 
   useEffect(() => {
@@ -28,12 +29,6 @@ function App() {
 
   if(userName){
     socket.emit('user', userName);
-    // setInterval(()=> {
-    //   axios('/users').then((data) => {
-    //     console.log(data);
-    //   });
-
-    // }, 1000);
     }
 
   return (
@@ -43,7 +38,8 @@ function App() {
       </Helmet>
       <main >
       {/* className='App' */}
-        {!userName ? <Login handleUserName={handleUserName}/> : <ChatView />}
+        {!userName ? <Login handleUserName={handleUserName}/> : <ChatView from={userName}/>}
+        {userName && <Logout handleUserName={handleUserName}/>}
         
 
       </main>

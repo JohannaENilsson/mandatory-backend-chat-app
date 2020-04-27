@@ -9,6 +9,8 @@ let users = [
   {name: 'Viktor'}
 ];
 
+let test = [];
+
 
 app.get('/users', (req, res) => {
   res.send({users});
@@ -29,9 +31,19 @@ io.on('connection', (socket) => {
 
   socket.on('user', (user) => {
     console.log(user);
+    console.log(users);
     users.push({name: user})
     socket.emit('message', user);
    });
+
+
+   socket.on('info', (data) => {
+    console.log(data);
+    test.push(data)
+    console.log(test);
+    // socket.emit('message', user);
+   });
+
 });
 
 // startar servern - socket startas automatiskt

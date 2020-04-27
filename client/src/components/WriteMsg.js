@@ -1,13 +1,27 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
-export default function WriteMsg(){
-    const [inputValue, setInputvalue] = useState('');
-     
+import sendMsg from '../actions/sendMsg';
 
-    return(
-        <section>
-            <input type='text' onChange={ e => setInputvalue(e.target.value)}/>
-            <input type='submit' value='Send' onClick={e => console.log('Will send the msg', inputValue)}/>
-        </section>
-    );
+export default function WriteMsg({ from }) {
+  const [msg, handleMsg] = useState('');
+
+  function handleSend() {
+    console.log('Will send the msg', msg);
+    let data = {
+      from: from,
+      msg: msg,
+    };
+    console.log(data);
+
+    sendMsg(data);
+    // sendMsg(from, msg);
+    return handleMsg('');
+  }
+
+  return (
+    <section>
+      <input type='text' onChange={(e) => handleMsg(e.target.value)} />
+      <input type='submit' value='Send' onClick={() => handleSend()} />
+    </section>
+  );
 }
