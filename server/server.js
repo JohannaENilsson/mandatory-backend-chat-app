@@ -1,14 +1,14 @@
 const express = require('express');
 const app = express();
 
-const http = require('http').createServer(app);
-const io = require('socket.io')(http, {origins: '*:*'});
+//mergar socket och express servern
+const http = require('http').createServer(app); 
+const io = require('socket.io')(http, {origins: '*:*'}); 
 
 let users = [
   {name: 'Viktor'}
 ];
 
-app.use(express.static('build'));
 
 app.get('/users', (req, res) => {
   res.send({users});
@@ -16,15 +16,25 @@ app.get('/users', (req, res) => {
 
 let clients = [];
 
+// lyssnar på connection
 io.on('connection', (socket) => {
   clients.push(socket);
   console.log('a user connected', socket.id);
 
+  // Lyssnar på medelande från clienten
   socket.on('new_message', (data) => {
+    // skickar meddelande till clienten
     socket.emit('message', data);
   });
+
+  socket.on('user', (user) => {
+    console.log(user);
+    users.push({name: user})
+    socket.emit('message', user);
+   });
 });
 
+// startar servern - socket startas automatiskt
 http.listen(8000, () => {
   console.log('listening on *:8000');
 });
