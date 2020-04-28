@@ -12,7 +12,7 @@ import Logout from './components/Logout';
 
 function App() {
   const [socket, setSocket] = useState(io('localhost:8000'));
-  const [userName, handleUserName] = useState(null);
+  const [userName, handleUserName] = useState('null');
   // console.log(userName);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import WriteMsg from './WriteMsg';
 import RenderMsgs from './RenderMsgs';
@@ -8,7 +8,18 @@ import getMsgs from '../actions/getMsgs';
 
 export default function Chatview({ from }) {
   const [msg, handleMsg] = useState('');
-  const [allMsgs, handleAllMsgs] = useState('');
+  const [allMsgs, handleAllMsgs] = useState();
+
+  useEffect(() => {
+    getMsgs()
+    .then((res) => {
+        console.log('response from server ', res.data.data);
+        handleAllMsgs(res.data.data);
+    })
+    .catch(err => {
+        console.error(err);
+    });
+  }, []);
 
   function handleSend(inputValue) {
     handleMsg(inputValue);
@@ -22,13 +33,12 @@ export default function Chatview({ from }) {
 
     sendMsg(data);
   }
-  getMsgs();
 
   return (
     <>
       <h1>Welcome {from} to this chat room</h1>
       <WriteMsg handleSend={handleSend} />
-      <RenderMsgs newMsg={msg} />
+      <RenderMsgs newMsg={msg} allMsgs={allMsgs}/>
     </>
   );
 }
