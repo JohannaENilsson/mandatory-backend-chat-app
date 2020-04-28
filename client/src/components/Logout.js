@@ -12,6 +12,6 @@ export default function Logout({handleUserName}){
      
 
     return(
-        <button onClick={() => handleLogout()}>Logout</button>
+        <button onClick={() => handleLogout()}>X</button>
     );
 }

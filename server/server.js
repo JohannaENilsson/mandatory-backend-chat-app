@@ -5,15 +5,22 @@ const app = express();
 const http = require('http').createServer(app); 
 const io = require('socket.io')(http, {origins: '*:*'}); 
 
-let users = [
-  {name: 'Viktor'}
-];
-
-let test = [];
+// let users = [
+//   {name: 'Viktor'}
+// ];
 
 
-app.get('/users', (req, res) => {
-  res.send({users});
+// Sparar responsen från clienten ska sparas i DB
+let data = [];
+
+
+// app.get('/users', (req, res) => {
+//   res.send({users});
+// });
+
+// så frontenden kan hämta
+app.get('/chat', (req, res) => {
+  res.send({data});
 });
 
 let clients = [];
@@ -22,6 +29,7 @@ let clients = [];
 io.on('connection', (socket) => {
   clients.push(socket);
   console.log('a user connected', socket.id);
+  
 
   // Lyssnar på medelande från clienten
   socket.on('new_message', (data) => {
@@ -29,19 +37,19 @@ io.on('connection', (socket) => {
     socket.emit('message', data);
   });
 
-  socket.on('user', (user) => {
-    console.log(user);
-    console.log(users);
-    users.push({name: user})
-    socket.emit('message', user);
-   });
+  // socket.on('user', (user) => {
+  //   console.log(user);
+  //   console.log(users);
+  //   users.push({name: user})
+  //   socket.emit('message', user);
+  //  });
 
 
-   socket.on('info', (data) => {
+   socket.on('info', (info) => {
+    console.log(info);
+    data.push(info)
     console.log(data);
-    test.push(data)
-    console.log(test);
-    // socket.emit('message', user);
+    socket.emit('message', info);
    });
 
 });

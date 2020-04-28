@@ -1,27 +1,24 @@
 import React, { useState } from 'react';
 
-import sendMsg from '../actions/sendMsg';
+export default function WriteMsg({ handleSend }) {
+  const [inputValue, handleInputValue] = useState('');
 
-export default function WriteMsg({ from }) {
-  const [msg, handleMsg] = useState('');
-
-  function handleSend() {
-    console.log('Will send the msg', msg);
-    let data = {
-      from: from,
-      msg: msg,
-    };
-    console.log(data);
-
-    sendMsg(data);
-    // sendMsg(from, msg);
-    return handleMsg('');
+  function submitMsg(inputValue) {
+    let removedWhiteSpace = inputValue.trim();
+    handleSend(removedWhiteSpace);
+    handleInputValue('');
   }
 
   return (
     <section>
-      <input type='text' onChange={(e) => handleMsg(e.target.value)} />
-      <input type='submit' value='Send' onClick={() => handleSend()} />
+      <input
+        type='text'
+        minLength='1'
+        maxLength='30'
+        value={inputValue}
+        onChange={(e) => handleInputValue(e.target.value)}
+      />
+      <input type='submit' value='Send' onClick={() => submitMsg(inputValue)} />
     </section>
   );
 }

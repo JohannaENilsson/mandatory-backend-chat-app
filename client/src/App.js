@@ -13,33 +13,33 @@ import Logout from './components/Logout';
 function App() {
   const [socket, setSocket] = useState(io('localhost:8000'));
   const [userName, handleUserName] = useState(null);
-  console.log(userName);
+  // console.log(userName);
 
   useEffect(() => {
-    axios('/users').then((data) => {
-      console.log(data);
-    });
-    console.log(socket);
+    // axios('/users').then((data) => {
+    //   console.log(data);
+    // });
+    // console.log(socket);
 
     // Lyssnar på meddelande från servern
     socket.on('message', (data) => {
-      console.log(data);
+      console.log('Got this from SERVER ', data);
     });
   }, []);
 
-  if(userName){
-    socket.emit('user', userName);
-    }
+  // if(userName){
+  //   socket.emit('user', userName);
+  //   }
 
   return (
     <>
       <Helmet>
         {!userName ? <title>Login</title> : <title>Chat</title>  }
       </Helmet>
-      <main >
-      {/* className='App' */}
-        {!userName ? <Login handleUserName={handleUserName}/> : <ChatView from={userName}/>}
+      <main className='App'>
         {userName && <Logout handleUserName={handleUserName}/>}
+        {!userName ? <Login handleUserName={handleUserName}/> : <ChatView from={userName}/>}
+        
         
 
       </main>
