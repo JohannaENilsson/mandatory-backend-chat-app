@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from 'axios'; // remove????
 
 import WriteMsg from './WriteMsg';
 import RenderMsgs from './RenderMsgs';
@@ -9,27 +9,19 @@ export default function Chatview({ socket ,from }) {
   const [allMsgs, handleAllMsgs] = useState(null);
   const [newMsg, setNewMsg] = useState(false);
 
-  useEffect(() => {
-    axios('/chat')
-      .then((res) => {
-        // console.log('response from server ', res.data.data);
-        handleAllMsgs(res.data.data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+
+useEffect(() => {
+    socket.on('allMsgs', (data) => {
+        console.log(data);
+        handleAllMsgs(data);
+    })
   }, []);
 
 //   useEffect(() => {
-//     axios('/chat')
-//       .then((res) => {
-//         // console.log('response from server ', res.data.data);
-//         handleAllMsgs(res.data.data);
-//         console.log('DENNA ---->',allMsgs);
-//       })
-//       .catch((err) => {
-//         console.error(err);
-//       });
+//     socket.on('message', (data) => {
+//         console.log(data);
+//         handleAllMsgs(data);
+//     })
 
 //     return () => {
 //       setNewMsg(false);
@@ -38,10 +30,10 @@ export default function Chatview({ socket ,from }) {
 
  
     socket.on('message', (data) => {
-        console.log('From server ', data);
+        console.log('I GOT -> ', data);
+        // allMsgs.push(data[0]);
         setNewMsg(true);
       });
-  
   
 
 //   if (socket) {
@@ -59,10 +51,11 @@ export default function Chatview({ socket ,from }) {
       to: 'userName/Room',
       timeStamp: 'Date',
     };
-    console.log(data);
+    console.log('I sent THIS ->', data);
 
     socket.emit('new_message', data);
     allMsgs.push(data);
+    console.log(allMsgs);
   }
 
   return (
