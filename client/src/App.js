@@ -12,14 +12,11 @@ import Logout from './components/Logout';
 
 function App() {
   const [socket, setSocket] = useState(io('localhost:8000'));
-  const [userName, handleUserName] = useState('null');
+  const [userName, handleUserName] = useState(null);
   // console.log(userName);
 
   useEffect(() => {
-    // axios('/users').then((data) => {
-    //   console.log(data);
-    // });
-    // console.log(socket);
+
 
     // Lyssnar på meddelande från servern
     socket.on('message', (data) => {
@@ -27,9 +24,6 @@ function App() {
     });
   }, []);
 
-  // if(userName){
-  //   socket.emit('user', userName);
-  //   }
 
   return (
     <>
