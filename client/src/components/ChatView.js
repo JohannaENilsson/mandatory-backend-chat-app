@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import io from 'socket.io-client';
 
 import WriteMsg from './WriteMsg';
 import RenderMsgs from './RenderMsgs';
 
-export default function Chatview({ from }) {
-  const [socket, handleSocket] = useState(io('localhost:8000'));
+export default function Chatview({ socket ,from }) {
   const [msg, handleMsg] = useState('');
   const [allMsgs, handleAllMsgs] = useState(null);
   const [newMsg, setNewMsg] = useState(false);
@@ -22,26 +20,36 @@ export default function Chatview({ from }) {
       });
   }, []);
 
-  useEffect(() => {
-    axios('/chat')
-      .then((res) => {
-        // console.log('response from server ', res.data.data);
-        handleAllMsgs(res.data.data);
-        console.log('DENNA ---->',allMsgs);
-      })
-      .catch((err) => {
-        console.error(err);
+//   useEffect(() => {
+//     axios('/chat')
+//       .then((res) => {
+//         // console.log('response from server ', res.data.data);
+//         handleAllMsgs(res.data.data);
+//         console.log('DENNA ---->',allMsgs);
+//       })
+//       .catch((err) => {
+//         console.error(err);
+//       });
+
+//     return () => {
+//       setNewMsg(false);
+//     };
+//   }, [newMsg]);
+
+ 
+    socket.on('message', (data) => {
+        console.log('From server ', data);
+        setNewMsg(true);
       });
+  
+  
 
-    return () => {
-      setNewMsg(false);
-    };
-  }, [newMsg]);
-
-  socket.on('message', (data) => {
-    console.log('From server ', data);
-    setNewMsg(true);
-  });
+//   if (socket) {
+//     // Lyssnar på meddelande från servern
+//       socket.on('message', (data) => {
+//       console.log('Got this from SERVER ', data);
+//     });
+//   }
 
   function handleSend(inputValue) {
     handleMsg(inputValue);

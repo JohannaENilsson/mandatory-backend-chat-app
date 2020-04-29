@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 export default function WriteMsg({ handleSend }) {
   const [inputValue, handleInputValue] = useState('');
 
-  function submitMsg(inputValue) {
+  function submitMsg(e) {
+    e.preventDefault();
     let removedWhiteSpace = inputValue.trim();
     handleSend(removedWhiteSpace);
     handleInputValue('');
@@ -11,6 +12,7 @@ export default function WriteMsg({ handleSend }) {
 
   return (
     <section>
+      <form>
       <input
         type='text'
         minLength='1'
@@ -18,7 +20,8 @@ export default function WriteMsg({ handleSend }) {
         value={inputValue}
         onChange={(e) => handleInputValue(e.target.value)}
       />
-      <input type='submit' value='Send' onClick={() => submitMsg(inputValue)} />
+      <input type='submit' value='Send' onClick={(e) => submitMsg(e)} />
+      </form>
     </section>
   );
 }
