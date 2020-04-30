@@ -11,13 +11,6 @@ function App() {
   const [socket, setSocket] = useState(null);
   const [userName, handleUserName] = useState(null);
 
-  // if (socket) {
-  //   // Lyssnar på meddelande från servern
-  //     socket.on('message', (data) => {
-  //     console.log('Got this from SERVER ', data);
-  //   });
-  // }
-
   return (
     <>
       <Helmet>{!userName ? <title>Login</title> : <title>Chat</title>}</Helmet>

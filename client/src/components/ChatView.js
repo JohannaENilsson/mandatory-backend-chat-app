@@ -19,6 +19,7 @@ export default function Chatview({ socket, from }) {
           draft.push(da);
         });
       });
+      
     });
   }, []);
 

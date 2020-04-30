@@ -14,13 +14,42 @@ app.use(express.json());
 
 
 // Definerier routen där frontenden ska hämta
+// app.get('/chat', (req, res) => {
+//   const db = getDB();
+//   db.collection('msgs')
+//     .find({})
+//     .toArray()
+//     .then((data) => {
+//       res.send(data);
+//     })
+//     .catch((err) => {
+//       console.error(err);
+//       res.status(500).end();
+//     });
+// });
+
 app.get('/chat', (req, res) => {
   const db = getDB();
-  db.collection('msgs')
+  db.collection('rooms')
     .find({})
     .toArray()
     .then((data) => {
       res.send(data);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).end();
+    });
+});
+
+app.get('/chat/:id', (req, res) => {
+  let userID = req.params.id;
+
+  const db = getDB();
+  db.collection('rooms')
+    .findOne({ _id: createObjectId(userID) }) // hämtar en user
+    .then((user) => {
+      res.send(user);
     })
     .catch((err) => {
       console.error(err);
@@ -47,7 +76,7 @@ io.on('connection', (socket) => {
 
   // Tar emot meddelanden
   socket.on('new_message', (clientInfo) => {
-    console.log(clientInfo);
+    console.log('a NEW msg ',clientInfo);
     // Skickar new_message till db
     db.collection('msgs')
       .insertOne(clientInfo)
@@ -61,6 +90,10 @@ io.on('connection', (socket) => {
         res.status(500).end();
       });
   });
+
+  socket.on('disconnect', () => {
+    console.log(`${socket.id} disconnected`);
+  })
 
 });
 
