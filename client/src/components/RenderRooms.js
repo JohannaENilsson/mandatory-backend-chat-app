@@ -2,11 +2,8 @@ import React from 'react';
 
 
 
-export default function RenderRooms({setAllRooms, allRooms}) {
-  // const [allRooms, setAllRooms] = useState(null);
-
-
-
+export default function RenderRooms({allRooms, handleDeleteRoom}) {
+  
   function handleRoom(e, id) {
     console.log(id);
   }
@@ -18,9 +15,12 @@ export default function RenderRooms({setAllRooms, allRooms}) {
   else {
     rooms = allRooms.map((room, idx) => {
       return (
-        <p key={idx} onClick={(e) => handleRoom(e, room._id)}>
+        <React.Fragment key={idx}>
+        <p onClick={(e) => handleRoom(e, room._id)}>
           {room.room}
         </p>
+        <button onClick={(e) => handleDeleteRoom(room._id)}>Delete room</button>
+        </React.Fragment>
       );
     });
   }

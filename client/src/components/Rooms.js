@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 
 import RenderRooms from './RenderRooms';
 
-import {getRooms, createRoom} from '../actions/axios';
+import {getRooms, createRoom, deleteRoom} from '../actions/axios';
 
 export default function Rooms() {
     const [allRooms, setAllRooms] = useState(null);
     const [newRoom, setNewRoom] = useState('');
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         getRooms()
@@ -22,10 +23,11 @@ export default function Rooms() {
       function handleNewRoom(e){
         e.preventDefault();
         console.log('add room')
+        let removedWhiteSpace = newRoom.trim();
 
-        if(newRoom){
-            console.log(newRoom);
-        createRoom(newRoom)
+        if(removedWhiteSpace){
+            console.log(removedWhiteSpace);
+        createRoom(removedWhiteSpace)
         .then((res) => {
             console.log(res.data);
             setAllRooms([...allRooms, res.data]);
@@ -34,14 +36,36 @@ export default function Rooms() {
           .catch((err) => {
             console.error(err);
           });
+        } else {
+            setError(true);
+            setTimeout(() => {
+                setError(false);
+            }, 3000);
         }
       }
-console.log('AllRooms ', allRooms);
+
+      function handleDeleteRoom(id){
+        console.log('delete me ', id);
+        deleteRoom(id)
+        .then(res => {
+            console.log(res);
+            let allRoomsExceptDeleted = allRooms.filter(x => {
+                return x._id !== id;
+            })
+            setAllRooms(allRoomsExceptDeleted);
+            console.log(' allRoomsExceptDeleted ', allRoomsExceptDeleted);
+
+        })
+        .catch(err => {
+            console.log(err);
+        })
+      }
 
   return (
     <section>
         <p>Handle Rooms</p>
       <form>
+          {error && <p>Give the room a name</p>}
         <input
           type='text'
           minLength='1'
@@ -55,7 +79,7 @@ console.log('AllRooms ', allRooms);
           onClick={(e) => handleNewRoom(e)}
         />
       </form>
-      <RenderRooms setAllRooms={setAllRooms} allRooms={allRooms}/>
+      <RenderRooms allRooms={allRooms} handleDeleteRoom={handleDeleteRoom}/>
     </section>
   );
 }

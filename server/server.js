@@ -23,32 +23,6 @@ app.get('/chat', (req, res) => {
     });
 });
 
-function validate(user) {
-  return !!user.room; // konverterar till boolean
-}
-
-app.post('/chat', async (req, res) => {
-  const db = getDB();
-  let data = req.body;
-  console.log(data);
-  if (validate(data) === false) return res.status(400).end();
-
-  db.collection('rooms')
-    .insertOne(data)
-    .then((result) => {
-      data._id = result.insertedId;
-      data.message = [];
-      console.log('from THEN ', data);
-      // resolve(data);
-      res.status(201).send(data);
-    })
-    .catch((err) => {
-      console.error(err);
-
-      res.status(500).end();
-    });
-});
-
 app.get('/chat/:id', (req, res) => {
   let userID = req.params.id;
 
@@ -62,6 +36,48 @@ app.get('/chat/:id', (req, res) => {
       console.error(err);
       res.status(500).end();
     });
+});
+
+
+function validate(user) {
+  return !!user.room; // konverterar till boolean
+}
+
+app.post('/chat', (req, res) => {
+  const db = getDB();
+  let data = req.body;
+  console.log(data);
+  if (validate(data) === false) return res.status(400).end();
+
+  db.collection('rooms')
+    .insertOne(data)
+    .then((result) => {
+      data._id = result.insertedId;
+      data.message = [];
+      console.log('from THEN ', data);
+      res.status(201).send(data);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).end();
+    });
+});
+
+
+app.delete('/chat/:id', (req,res) => {
+  console.log(req.params.id);
+  let roomId = req.params.id;
+  const db = getDB();
+
+  db.collection('rooms')
+  .deleteOne({_id: createObjectId(roomId)})
+  .then(() => {
+    res.status(204).end();
+  })
+  .catch(err => {
+    console.error(err);
+    res.status(500).end();
+  });
 });
 
 // lyssnar på alla connections
