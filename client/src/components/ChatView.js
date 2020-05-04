@@ -13,7 +13,7 @@ export default function Chatview({ socket, from }) {
   // När sidan laddas FÖRSTA gången
   useEffect(() => {
     socket.on('allMsgs', (data) => {
-      console.log('>> all incoming messages:', data);
+      // console.log('>> all incoming messages:', data);
       data.map((da) => {
         return setData((draft) => {
           draft.push(da);
@@ -23,11 +23,10 @@ export default function Chatview({ socket, from }) {
     });
   }, []);
 
-  console.log('IMMER ', data);
 
   useEffect(() => {
     socket.on('message', (data) => {
-      console.log('I GOT -> ', data);
+      // console.log('I GOT -> ', data);
       setData((draft) => {
         draft.push(data);
       });

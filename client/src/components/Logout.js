@@ -6,10 +6,10 @@ export default function Logout({ handleUserName, socket }) {
   const [logout, setLogout] = useState(false);
 
   function handleLogout() {
-    console.log('You will logout');
+    // console.log('You will logout');
     setLogout(true);
     handleUserName(logout);
-    socket.close();
+    socket.close();    
   }
 
   return <button onClick={() => handleLogout()}>X</button>;

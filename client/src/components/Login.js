@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import io from 'socket.io-client';
 
+
+
+
 export default function Login({ handleUserName, setSocket }) {
   const [inputValue, setInputValue] = useState('');
+  
 
   function handleLogin(e) {
     e.preventDefault();
     handleUserName(inputValue.trim());
     setSocket(io('localhost:8000')); // connectar till socket
+    
   }
 
   return (
     <section>
+      
       <form>
       <input
         type='text'
@@ -24,6 +30,3 @@ export default function Login({ handleUserName, setSocket }) {
     </section>
   );
 }
-
-
-// io('localhost:8000')
