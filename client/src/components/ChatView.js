@@ -1,28 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // remove????
 import { useImmer } from 'use-immer';
 
 import WriteMsg from './WriteMsg';
 import RenderMsgs from './RenderMsgs';
+import Rooms from './Rooms';
 
 export default function Chatview({ socket, from }) {
-  const [allMsgs, handleAllMsgs] = useState([]);
   const [newMsg, setNewMsg] = useState([]);
   const [data, setData] = useImmer([]);
+  const [roomMsg, setRoomMsg] = useImmer([]);
+  const [roomName, setRoomName] = useState(null);
+  const [activeRoom, setActiveRoom] = useState('5eaa9205995ed26ad0b8e74c');
 
-  // När sidan laddas FÖRSTA gången
+  function resetMsgArray() {
+    setRoomMsg((draft) => {
+      draft.length = 0;
+    });
+  }
+
   useEffect(() => {
-    socket.on('allMsgs', (data) => {
-      // console.log('>> all incoming messages:', data);
-      data.map((da) => {
-        return setData((draft) => {
-          draft.push(da);
+    socket.on('rooms', (data) => {
+      setActiveRoom(data[0]._id);
+      console.log('resp data ', data[0].messages);
+      let resp = data[0].messages;
+      setRoomName(data[0].room);
+
+      resp.map((oneMessage) => {
+        // console.log(oneMessage);
+        return setRoomMsg((draft) => {
+          draft.push(oneMessage);
         });
       });
-      
     });
   }, []);
-
 
   useEffect(() => {
     socket.on('message', (data) => {
@@ -46,11 +56,27 @@ export default function Chatview({ socket, from }) {
     });
   }
 
+  function changeRoom(id) {
+    if (activeRoom !== id) {
+      resetMsgArray();
+      socket.emit('change room', id);
+    }
+  }
+
   return (
     <>
-      <h1>Welcome {from} to this chat room</h1>
-      <WriteMsg handleSend={handleSend} />
-      <RenderMsgs newMsg={newMsg} allMsgs={data} />
+      {!roomName ? (
+        <p>Loading</p>
+      ) : (
+        <>
+          <h1>
+            Welcome {from} to this chat {roomName}
+          </h1>
+          <WriteMsg handleSend={handleSend} />
+          <RenderMsgs newMsg={newMsg} allMsgs={roomMsg} />
+          <Rooms changeRoom={changeRoom} />
+        </>
+      )}
     </>
   );
 }

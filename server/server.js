@@ -84,8 +84,40 @@ app.delete('/chat/:id', (req,res) => {
 io.on('connection', (socket) => {
   console.log('a user connected', socket.id); // loggar varje gång någon connectar
 
+  let roomId = '5eb134d96b4bed55606f17fb';
   // skicka all data som finns i db när man connectat
   const db = getDB();
+  db.collection('rooms')
+    .find({ _id: createObjectId(roomId)})
+    .toArray()
+    .then((dbData) => {
+      console.log('room: ', dbData);
+      socket.emit('rooms', dbData);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).end();
+    });
+
+    socket.on('change room', (id) => {
+      console.log(id);
+    
+    db.collection('rooms')
+    .find({ _id: createObjectId(id)})
+    .toArray()
+    .then((dbData) => {
+      console.log('room: ', dbData);
+      socket.emit('rooms', dbData);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).end();
+    });
+    })
+
+
+  // skicka all data som finns i db när man connectat
+  // const db = getDB();
   db.collection('msgs')
     .find({})
     .toArray()

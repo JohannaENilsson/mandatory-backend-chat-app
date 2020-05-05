@@ -1,32 +1,27 @@
 import React from 'react';
 
-
-
-export default function RenderRooms({allRooms, handleDeleteRoom}) {
+export default function RenderRooms({ allRooms, handleDeleteRoom, changeRoom }) {
   
-  function handleRoom(e, id) {
-    console.log(id);
-  }
-
 
   let rooms;
   if (!allRooms) {
     rooms = <p>No rooms</p>;
-  } 
-  else {
+  } else {
     rooms = allRooms.map((room, idx) => {
       return (
         <React.Fragment key={idx}>
-        <li onClick={(e) => handleRoom(e, room._id)}>
-          <span>{room.room} </span>
-          <button onClick={(e) => handleDeleteRoom(room._id)}>Delete</button>
-        </li>
-        
+          <li onClick={(e) => changeRoom(room._id)}>
+            <span>{room.room} </span>
+            <button onClick={(e) => handleDeleteRoom(room._id)}>Delete</button>
+          </li>
         </React.Fragment>
       );
-
     });
   }
 
-  return <section> <ul>{ rooms }</ul></section>
+  return (
+    <section>
+      <ul>{rooms}</ul>
+    </section>
+  );
 }

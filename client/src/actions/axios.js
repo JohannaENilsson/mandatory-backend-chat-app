@@ -7,6 +7,7 @@ export function getRooms() {
 export function createRoom(newRoom) {
   return axios.post('/chat', {
     room: newRoom,
+    messages: []
   });
 }
 

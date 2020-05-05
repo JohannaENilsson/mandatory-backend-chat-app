@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
 import RenderRooms from './RenderRooms';
-
 import { getRooms, createRoom, deleteRoom } from '../actions/axios';
 
-export default function Rooms() {
+export default function Rooms({ changeRoom}) {
   const [allRooms, setAllRooms] = useState(null);
   const [newRoom, setNewRoom] = useState('');
   const [error, setError] = useState(false);
@@ -12,7 +11,7 @@ export default function Rooms() {
   useEffect(() => {
     getRooms()
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         setAllRooms(res.data);
       })
       .catch((err) => {
@@ -26,9 +25,9 @@ export default function Rooms() {
       if (room.room === name) {
         return (isValid = false);
       }
+      return null;
     });
     console.log('VALID IS ', isValid);
-
     return isValid;
   }
 
@@ -75,8 +74,8 @@ export default function Rooms() {
   return (
     <section>
       <p>Handle Rooms</p>
+      {error && <p>Give the room a unique name</p>}
       <form>
-        {error && <p>Give the room a name</p>}
         <input
           type='text'
           minLength='1'
@@ -90,7 +89,7 @@ export default function Rooms() {
           onClick={(e) => handleNewRoom(e)}
         />
       </form>
-      <RenderRooms allRooms={allRooms} handleDeleteRoom={handleDeleteRoom} />
+      <RenderRooms allRooms={allRooms} handleDeleteRoom={handleDeleteRoom}  changeRoom={changeRoom}/>
     </section>
   );
 }

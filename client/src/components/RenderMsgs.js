@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 export default function RenderMsgs({ newMsg, allMsgs }) {
+  console.log('when do i happen? ',allMsgs);
+
   let messages;
   if (!allMsgs) {
     messages = <p>Loading...</p>;
@@ -35,12 +37,7 @@ export default function RenderMsgs({ newMsg, allMsgs }) {
   return (
     <div className='msgContainer' aria-label={'message-container'}>
       {messages}
-      {newMessages}
-      {/* <section >
-        <span>{newMsg.from}: </span>
-        <span>{newMsg.msg}</span>
-      </section> */}
-
+      {/* {newMessages} */}
     </div>
   );
 }
