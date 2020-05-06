@@ -1,8 +1,6 @@
 import React from 'react';
 
 export default function RenderMsgs({ newMsg, allMsgs }) {
-  console.log('when do i happen? ',allMsgs);
-
   let messages;
   if (!allMsgs) {
     messages = <p>Loading...</p>;
@@ -19,20 +17,20 @@ export default function RenderMsgs({ newMsg, allMsgs }) {
     });
   }
 
-  let newMessages;
+//   let newMessages;
 
-  if(newMsg){
-    newMessages = newMsg.map((msg, idx) => {
-    return (
-      <section key={idx}>
-        <span>{msg.from}: </span>
-        <span>{msg.msg}</span>
-      </section>
-    );
-  })
-} else{
-  return;
-}
+//   if(newMsg){
+//     newMessages = newMsg.map((msg, idx) => {
+//     return (
+//       <section key={idx}>
+//         <span>{msg.from}: </span>
+//         <span>{msg.msg}</span>
+//       </section>
+//     );
+//   })
+// } else{
+//   return;
+// }
 
   return (
     <div className='msgContainer' aria-label={'message-container'}>

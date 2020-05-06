@@ -10,7 +10,7 @@ export default function RenderRooms({ allRooms, handleDeleteRoom, changeRoom }) 
     rooms = allRooms.map((room, idx) => {
       return (
         <React.Fragment key={idx}>
-          <li onClick={(e) => changeRoom(room._id)}>
+          <li onClick={(e) => changeRoom(room._id, room.room)}>
             <span>{room.room} </span>
             <button onClick={(e) => handleDeleteRoom(room._id)}>Delete</button>
           </li>

@@ -11,7 +11,7 @@ export default function Login({ handleUserName, setSocket }) {
   function handleLogin(e) {
     e.preventDefault();
     handleUserName(inputValue.trim());
-    setSocket(io('localhost:8000')); // connectar till socket
+    setSocket(io('localhost:8000/chat')); // connectar till socket
     
   }
 

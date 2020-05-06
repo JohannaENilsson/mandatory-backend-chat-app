@@ -6,11 +6,11 @@ import RenderMsgs from './RenderMsgs';
 import Rooms from './Rooms';
 
 export default function Chatview({ socket, from }) {
-  const [newMsg, setNewMsg] = useState([]);
+  // const [newMsg, setNewMsg] = useState([]);
   const [data, setData] = useImmer([]);
   const [roomMsg, setRoomMsg] = useImmer([]);
   const [roomName, setRoomName] = useState(null);
-  const [activeRoom, setActiveRoom] = useState('5eaa9205995ed26ad0b8e74c');
+  const [activeRoom, setActiveRoom] = useState();
 
   function resetMsgArray() {
     setRoomMsg((draft) => {
@@ -18,13 +18,30 @@ export default function Chatview({ socket, from }) {
     });
   }
 
+
+  useEffect(() => {
+    socket.on('welcome', (msg) => {
+      console.log(msg);
+    })
+  }, [])
+
+  useEffect(() => {
+    socket.on('newUSER', (msg) => {
+      console.log(msg);
+    });
+  }, [])
+
   useEffect(() => {
     socket.on('rooms', (data) => {
+      // sparar ID
       setActiveRoom(data[0]._id);
-      console.log('resp data ', data[0].messages);
-      let resp = data[0].messages;
+      //Sparar NAMNET
       setRoomName(data[0].room);
 
+      console.log('resp data ', data);
+      console.log('resp data [0]', data[0].messages);
+
+      let resp = data[0].messages;
       resp.map((oneMessage) => {
         // console.log(oneMessage);
         return setRoomMsg((draft) => {
@@ -36,8 +53,8 @@ export default function Chatview({ socket, from }) {
 
   useEffect(() => {
     socket.on('message', (data) => {
-      // console.log('I GOT -> ', data);
-      setData((draft) => {
+      console.log('I GOT -> ', data);
+      setRoomMsg((draft) => {
         draft.push(data);
       });
     });
@@ -51,30 +68,35 @@ export default function Chatview({ socket, from }) {
       timeStamp: 'Date',
     };
     socket.emit('new_message', data);
-    setData((draft) => {
+    setRoomMsg((draft) => {
       draft.push(data);
     });
   }
 
-  function changeRoom(id) {
+  function changeRoom(id, name) {
+    console.log('The room i clicked on ', id, name);
     if (activeRoom !== id) {
       resetMsgArray();
-      socket.emit('change room', id);
+      socket.emit('joinRoom', name, id);
     }
   }
 
   return (
     <>
-      {!roomName ? (
-        <p>Loading</p>
+    <Rooms changeRoom={changeRoom} />
+      {!activeRoom ? (
+        <h1>
+        {from} join a room 
+      </h1>
       ) : (
         <>
           <h1>
             Welcome {from} to this chat {roomName}
           </h1>
           <WriteMsg handleSend={handleSend} />
-          <RenderMsgs newMsg={newMsg} allMsgs={roomMsg} />
-          <Rooms changeRoom={changeRoom} />
+          <RenderMsgs allMsgs={roomMsg} />
+          {/* <RenderMsgs newMsg={newMsg} allMsgs={roomMsg} /> */}
+          
         </>
       )}
     </>

@@ -38,7 +38,6 @@ app.get('/chat/:id', (req, res) => {
     });
 });
 
-
 function validate(user) {
   return !!user.room; // konverterar till boolean
 }
@@ -63,100 +62,89 @@ app.post('/chat', (req, res) => {
     });
 });
 
-
-app.delete('/chat/:id', (req,res) => {
+app.delete('/chat/:id', (req, res) => {
   console.log(req.params.id);
   let roomId = req.params.id;
   const db = getDB();
 
   db.collection('rooms')
-  .deleteOne({_id: createObjectId(roomId)})
-  .then(() => {
-    res.status(204).end();
-  })
-  .catch(err => {
-    console.error(err);
-    res.status(500).end();
-  });
+    .deleteOne({ _id: createObjectId(roomId) })
+    .then(() => {
+      res.status(204).end();
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).end();
+    });
 });
 
 // lyssnar på alla connections
-io.on('connection', (socket) => {
+io.of('/chat').on('connection', (socket) => {
   console.log('a user connected', socket.id); // loggar varje gång någon connectar
-
-  let roomId = '5eb134d96b4bed55606f17fb';
-  // skicka all data som finns i db när man connectat
-  const db = getDB();
-  db.collection('rooms')
-    .find({ _id: createObjectId(roomId)})
-    .toArray()
-    .then((dbData) => {
-      console.log('room: ', dbData);
-      socket.emit('rooms', dbData);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).end();
-    });
-
-    socket.on('change room', (id) => {
-      console.log(id);
+  socket.emit('welcome', 'welcome');
+  
+  socket.on('joinRoom', (room, roomId) =>{
+    socket.join(room);
+    console.log('RoomName', room,' id ', roomId);
+    //** Skickar till ANDRA när någon joinar ett rum
+    socket.to(room).emit('newUSER', 'NEW USER JOINED THE ROOM ' + room);
+    const db = getDB();
     
     db.collection('rooms')
-    .find({ _id: createObjectId(id)})
+    .find({ _id: createObjectId(roomId) })
     .toArray()
     .then((dbData) => {
       console.log('room: ', dbData);
+
+      // ** SKICKAR ALL RUMSDATA
+      // io.to(room).emit('rooms', dbData);
       socket.emit('rooms', dbData);
     })
     .catch((err) => {
       console.error(err);
       res.status(500).end();
     });
+
+    // ** NYTT MSG
+    socket.on('new_message', (data) => {
+      console.log('i got THIS msg ', data);
+      io.of('/chat').in(room).emit('message', data);
+      // io.to(room).emit('message', data);
+      // socket.emit('message', data);
+  
     })
-
-
-  // skicka all data som finns i db när man connectat
-  // const db = getDB();
-  db.collection('msgs')
-    .find({})
-    .toArray()
-    .then((dbData) => {
-      socket.emit('allMsgs', dbData);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).end();
-    });
-
-  // Tar emot meddelanden
-  socket.on('new_message', (clientInfo) => {
-    console.log('a NEW msg ', clientInfo);
-    // Skickar new_message till db
-    db.collection('msgs')
-      .insertOne(clientInfo)
-      .then((result) => {
-        clientInfo._id = result.insertedId;
-        // skickar tillbaka till alla anrda
-        socket.broadcast.emit('message', clientInfo);
-      })
-      .catch((e) => {
-        console.error(e);
-        res.status(500).end();
-      });
+    
   });
-  // ***********************************************************************************
-  // // lyssnar på alla connections
-  // io.on('connection', (socket) => {
-  //   console.log('a user connected', socket.id); // loggar varje gång någon connectar
 
-  //   // skicka all data som finns i db när man connectat
-  //   const db = getDB();
-  //   db.collection('msgs')
-  //     .find({})
+  
+  
+
+  // let roomId = '5eb134d96b4bed55606f17fb';
+  // // skicka all data som finns i db när man connectat
+  // const db = getDB();
+  // db.collection('rooms')
+  //   .find({ _id: createObjectId(roomId) })
+  //   .toArray()
+  //   .then((dbData) => {
+  //     console.log('room: ', dbData);
+  //     socket.emit('rooms', dbData);
+  //   })
+  //   .catch((err) => {
+  //     console.error(err);
+  //     res.status(500).end();
+  //   });
+
+  // // Bytar rum
+  // socket.on('change room', (id) => {
+  //   console.log(id);
+  //   roomId = id;
+
+  //   db.collection('rooms')
+  //     .find({ _id: createObjectId(roomId) })
   //     .toArray()
   //     .then((dbData) => {
-  //       socket.emit('allMsgs', dbData);
+  //       console.log('room: ', dbData);
+  //       socket.emit('rooms', dbData);
   //     })
   //     .catch((err) => {
   //       console.error(err);
@@ -165,9 +153,10 @@ io.on('connection', (socket) => {
 
   //   // Tar emot meddelanden
   //   socket.on('new_message', (clientInfo) => {
-  //     console.log('a NEW msg ',clientInfo);
+  //     console.log('a NEW msg ', clientInfo);
   //     // Skickar new_message till db
-  //     db.collection('msgs')
+  //     db.collection('rooms')
+  //       .find({ _id: createObjectId(roomId) })
   //       .insertOne(clientInfo)
   //       .then((result) => {
   //         clientInfo._id = result.insertedId;
@@ -179,8 +168,9 @@ io.on('connection', (socket) => {
   //         res.status(500).end();
   //       });
   //   });
-  // ***********************************************************************************
+  
 
+  
   socket.on('disconnect', () => {
     console.log(`${socket.id} disconnected`);
   });
