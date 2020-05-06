@@ -6,7 +6,6 @@ import RenderMsgs from './RenderMsgs';
 import Rooms from './Rooms';
 
 export default function Chatview({ socket, from }) {
-  // const [newMsg, setNewMsg] = useState([]);
   const [data, setData] = useImmer([]);
   const [roomMsg, setRoomMsg] = useImmer([]);
   const [roomName, setRoomName] = useState(null);
@@ -40,7 +39,7 @@ export default function Chatview({ socket, from }) {
   useEffect(() => {
     socket.on('rooms', (data) => {
       // sparar ID
-      setActiveRoom(data[0]._id);
+      // setActiveRoom(data[0]._id); ************************************
       //Sparar NAMNET
       setRoomName(data[0].room);
 
@@ -74,7 +73,7 @@ export default function Chatview({ socket, from }) {
       to: 'userName/Room',
       timeStamp: 'Date',
     };
-    socket.emit('new_message', data, roomName);
+    socket.emit('new_message', data, roomName, activeRoom);
     setRoomMsg((draft) => {
       draft.push(data);
     });
@@ -83,9 +82,11 @@ export default function Chatview({ socket, from }) {
   function changeRoom(id, name) {
     console.log('The room i clicked on ', id, name);
     if (activeRoom !== id) {
+      console.log(activeRoom, id);
       resetMsgArray();
-      socket.emit('leaveRoom',roomName, activeRoom);
+      // socket.emit('leaveRoom',roomName, activeRoom, id);
       socket.emit('joinRoom', name, id);
+      setActiveRoom(id);
       
     }
   }

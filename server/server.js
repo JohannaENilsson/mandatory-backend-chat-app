@@ -105,19 +105,30 @@ io.on('connection', (socket) => {
       res.status(500).end();
     });
 
-    socket.on('leaveRoom', (room, roomId) =>{
-      socket.leave(room);
-    });
+    // socket.on('leaveRoom', (room, roomId) =>{
+    //   socket.leave(room);
+    // });
   });
 
 
   // ** NYTT MSG
   // Måste vara utanför rummet!
-  socket.on('new_message', (data, room) => {
+  socket.on('new_message', (data, room, id) => {
     console.log('i got THIS msg ', data);
-    console.log('This is the room ', room);
-    socket.broadcast.to(room).emit('message', data);
-  })  
+    console.log('118 This is the room ', room, ' room ID', id);
+    const db = getDB();
+
+    db.collection('rooms')
+      .updateOne({ _id: createObjectId(id) }, { $push: { messages: data } })
+      .then((res) => {
+        socket.broadcast.to(room).emit('message', data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    
+  });  
 
 
   // let roomId = '5eb134d96b4bed55606f17fb';

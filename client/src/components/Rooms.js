@@ -11,7 +11,6 @@ export default function Rooms({ changeRoom}) {
   useEffect(() => {
     getRooms()
       .then((res) => {
-        // console.log(res.data);
         setAllRooms(res.data);
       })
       .catch((err) => {
