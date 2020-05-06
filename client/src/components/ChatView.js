@@ -32,6 +32,12 @@ export default function Chatview({ socket, from }) {
   }, [])
 
   useEffect(() => {
+    socket.on('left', (msg) => {
+      console.log(msg);
+    });
+  }, [])
+
+  useEffect(() => {
     socket.on('rooms', (data) => {
       // sparar ID
       setActiveRoom(data[0]._id);
@@ -61,13 +67,14 @@ export default function Chatview({ socket, from }) {
   }, []);
 
   function handleSend(inputValue) {
+    console.log('WHEN');
     let data = {
       from: from,
       msg: inputValue,
       to: 'userName/Room',
       timeStamp: 'Date',
     };
-    socket.emit('new_message', data);
+    socket.emit('new_message', data, roomName);
     setRoomMsg((draft) => {
       draft.push(data);
     });
@@ -77,7 +84,9 @@ export default function Chatview({ socket, from }) {
     console.log('The room i clicked on ', id, name);
     if (activeRoom !== id) {
       resetMsgArray();
+      socket.emit('leaveRoom',roomName, activeRoom);
       socket.emit('joinRoom', name, id);
+      
     }
   }
 

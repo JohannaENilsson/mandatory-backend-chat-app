@@ -79,7 +79,7 @@ app.delete('/chat/:id', (req, res) => {
 });
 
 // lyssnar på alla connections
-io.of('/chat').on('connection', (socket) => {
+io.on('connection', (socket) => {
   console.log('a user connected', socket.id); // loggar varje gång någon connectar
   socket.emit('welcome', 'welcome');
   
@@ -105,19 +105,20 @@ io.of('/chat').on('connection', (socket) => {
       res.status(500).end();
     });
 
-    // ** NYTT MSG
-    socket.on('new_message', (data) => {
-      console.log('i got THIS msg ', data);
-      io.of('/chat').in(room).emit('message', data);
-      // io.to(room).emit('message', data);
-      // socket.emit('message', data);
-  
-    })
-    
+    socket.on('leaveRoom', (room, roomId) =>{
+      socket.leave(room);
+    });
   });
 
-  
-  
+
+  // ** NYTT MSG
+  // Måste vara utanför rummet!
+  socket.on('new_message', (data, room) => {
+    console.log('i got THIS msg ', data);
+    console.log('This is the room ', room);
+    socket.broadcast.to(room).emit('message', data);
+  })  
+
 
   // let roomId = '5eb134d96b4bed55606f17fb';
   // // skicka all data som finns i db när man connectat
