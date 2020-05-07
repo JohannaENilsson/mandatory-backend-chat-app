@@ -3,20 +3,39 @@ import React, { useEffect, useState } from 'react';
 import RenderRooms from './RenderRooms';
 import { getRooms, createRoom, deleteRoom } from '../actions/axios';
 
-export default function Rooms({ changeRoom}) {
+export default function Rooms({ changeRoom, socket }) {
   const [allRooms, setAllRooms] = useState(null);
   const [newRoom, setNewRoom] = useState('');
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    getRooms()
+    handleRooms()
+  }, []);
+
+  useEffect(() => {
+    socket.on('new_room', res => {
+      console.log('FROM SERVER NEW ROOM ', res);
+      handleRooms()
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on('delete_room', res => {
+      console.log('FROM SERVER NEW ROOM ', res);
+      handleRooms()
+    });
+  }, []);
+
+  function handleRooms() {
+    return getRooms()
       .then((res) => {
+        console.log('resp data from ROOMS', res.data);
         setAllRooms(res.data);
       })
       .catch((err) => {
         console.error(err);
       });
-  }, []);
+  }
 
   function isNameUnique(name) {
     let isValid = true;
@@ -44,6 +63,7 @@ export default function Rooms({ changeRoom}) {
           console.log(res.data);
           setAllRooms([...allRooms, res.data]);
           setNewRoom('');
+          // handleRooms();
         })
         .catch((err) => {
           console.error(err);
@@ -88,7 +108,11 @@ export default function Rooms({ changeRoom}) {
           onClick={(e) => handleNewRoom(e)}
         />
       </form>
-      <RenderRooms allRooms={allRooms} handleDeleteRoom={handleDeleteRoom}  changeRoom={changeRoom}/>
+      <RenderRooms
+        allRooms={allRooms}
+        handleDeleteRoom={handleDeleteRoom}
+        changeRoom={changeRoom}
+      />
     </section>
   );
 }

@@ -23,21 +23,6 @@ app.get('/chat', (req, res) => {
     });
 });
 
-app.get('/chat/:id', (req, res) => {
-  let userID = req.params.id;
-
-  const db = getDB();
-  db.collection('rooms')
-    .findOne({ _id: createObjectId(userID) }) // hämtar en user
-    .then((user) => {
-      res.send(user);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).end();
-    });
-});
-
 function validate(user) {
   return !!user.room; // konverterar till boolean
 }
@@ -54,6 +39,10 @@ app.post('/chat', (req, res) => {
       data._id = result.insertedId;
       data.message = [];
       console.log('from THEN ', data);
+      if (_socket) {
+        console.log('NEW ROOM --->');
+        _socket.broadcast.emit('new_room', result);
+      }
       res.status(201).send(data);
     })
     .catch((err) => {
@@ -70,6 +59,10 @@ app.delete('/chat/:id', (req, res) => {
   db.collection('rooms')
     .deleteOne({ _id: createObjectId(roomId) })
     .then(() => {
+      if (_socket) {
+        console.log('Delete ROOM --->');
+        _socket.broadcast.emit('delete_room', roomId);
+      }
       res.status(204).end();
     })
     .catch((err) => {
@@ -78,38 +71,35 @@ app.delete('/chat/:id', (req, res) => {
     });
 });
 
+let _socket = null;
+
 // lyssnar på alla connections
 io.on('connection', (socket) => {
+  _socket = socket;
   console.log('a user connected', socket.id); // loggar varje gång någon connectar
   socket.emit('welcome', 'welcome');
-  
-  socket.on('joinRoom', (room, roomId) =>{
+
+  socket.on('joinRoom', (room, roomId) => {
     socket.join(room);
-    console.log('RoomName', room,' id ', roomId);
+    console.log('RoomName', room, ' id ', roomId);
     //** Skickar till ANDRA när någon joinar ett rum
     socket.to(room).emit('newUSER', 'NEW USER JOINED THE ROOM ' + room);
     const db = getDB();
-    
+
     db.collection('rooms')
-    .find({ _id: createObjectId(roomId) })
-    .toArray()
-    .then((dbData) => {
-      console.log('room: ', dbData);
+      .find({ _id: createObjectId(roomId) })
+      .toArray()
+      .then((dbData) => {
+        console.log('room: ', dbData);
 
-      // ** SKICKAR ALL RUMSDATA
-      // io.to(room).emit('rooms', dbData);
-      socket.emit('rooms', dbData);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).end();
-    });
-
-    // socket.on('leaveRoom', (room, roomId) =>{
-    //   socket.leave(room);
-    // });
+        // ** SKICKAR ALL RUMSDATA
+        socket.emit('rooms', dbData);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).end();
+      });
   });
-
 
   // ** NYTT MSG
   // Måste vara utanför rummet!
@@ -126,63 +116,8 @@ io.on('connection', (socket) => {
       .catch((err) => {
         console.log(err);
       });
+  });
 
-    
-  });  
-
-
-  // let roomId = '5eb134d96b4bed55606f17fb';
-  // // skicka all data som finns i db när man connectat
-  // const db = getDB();
-  // db.collection('rooms')
-  //   .find({ _id: createObjectId(roomId) })
-  //   .toArray()
-  //   .then((dbData) => {
-  //     console.log('room: ', dbData);
-  //     socket.emit('rooms', dbData);
-  //   })
-  //   .catch((err) => {
-  //     console.error(err);
-  //     res.status(500).end();
-  //   });
-
-  // // Bytar rum
-  // socket.on('change room', (id) => {
-  //   console.log(id);
-  //   roomId = id;
-
-  //   db.collection('rooms')
-  //     .find({ _id: createObjectId(roomId) })
-  //     .toArray()
-  //     .then((dbData) => {
-  //       console.log('room: ', dbData);
-  //       socket.emit('rooms', dbData);
-  //     })
-  //     .catch((err) => {
-  //       console.error(err);
-  //       res.status(500).end();
-  //     });
-
-  //   // Tar emot meddelanden
-  //   socket.on('new_message', (clientInfo) => {
-  //     console.log('a NEW msg ', clientInfo);
-  //     // Skickar new_message till db
-  //     db.collection('rooms')
-  //       .find({ _id: createObjectId(roomId) })
-  //       .insertOne(clientInfo)
-  //       .then((result) => {
-  //         clientInfo._id = result.insertedId;
-  //         // skickar tillbaka till alla anrda
-  //         socket.broadcast.emit('message', clientInfo);
-  //       })
-  //       .catch((e) => {
-  //         console.error(e);
-  //         res.status(500).end();
-  //       });
-  //   });
-  
-
-  
   socket.on('disconnect', () => {
     console.log(`${socket.id} disconnected`);
   });
@@ -192,18 +127,3 @@ io.on('connection', (socket) => {
 http.listen(8000, () => {
   console.log('listening on *:8000');
 });
-
-// Definerier routen där frontenden ska hämta
-// app.get('/chat', (req, res) => {
-//   const db = getDB();
-//   db.collection('msgs')
-//     .find({})
-//     .toArray()
-//     .then((data) => {
-//       res.send(data);
-//     })
-//     .catch((err) => {
-//       console.error(err);
-//       res.status(500).end();
-//     });
-// });

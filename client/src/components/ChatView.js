@@ -93,7 +93,7 @@ export default function Chatview({ socket, from }) {
 
   return (
     <>
-    <Rooms changeRoom={changeRoom} />
+    <Rooms changeRoom={changeRoom} socket={socket}/>
       {!activeRoom ? (
         <h1>
         {from} join a room 
