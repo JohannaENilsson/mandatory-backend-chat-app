@@ -7,11 +7,11 @@ export function getRooms() {
 export function createRoom(newRoom) {
   return axios.post('/chat', {
     room: newRoom,
-    messages: []
+    messages: [],
   });
 }
 
-export function deleteRoom(id){
-  console.log(id);
+export function deleteRoom(id) {
   return axios.delete(`/chat/${id}`);
 }
+

@@ -23,8 +23,8 @@ app.get('/chat', (req, res) => {
     });
 });
 
-function validate(user) {
-  return !!user.room; // konverterar till boolean
+function validate(data) {
+  return !!data.room; // konverterar till boolean
 }
 
 app.post('/chat', (req, res) => {
@@ -40,7 +40,6 @@ app.post('/chat', (req, res) => {
       data.message = [];
       console.log('from THEN ', data);
       if (_socket) {
-        console.log('NEW ROOM --->');
         _socket.broadcast.emit('new_room', result);
       }
       res.status(201).send(data);
@@ -55,12 +54,12 @@ app.delete('/chat/:id', (req, res) => {
   console.log(req.params.id);
   let roomId = req.params.id;
   const db = getDB();
+  console.log(roomId);
 
   db.collection('rooms')
     .deleteOne({ _id: createObjectId(roomId) })
     .then(() => {
       if (_socket) {
-        console.log('Delete ROOM --->');
         _socket.broadcast.emit('delete_room', roomId);
       }
       res.status(204).end();
@@ -104,8 +103,6 @@ io.on('connection', (socket) => {
   // ** NYTT MSG
   // Måste vara utanför rummet!
   socket.on('new_message', (data, room, id) => {
-    console.log('i got THIS msg ', data);
-    console.log('118 This is the room ', room, ' room ID', id);
     const db = getDB();
 
     db.collection('rooms')

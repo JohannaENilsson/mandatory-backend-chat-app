@@ -9,27 +9,24 @@ export default function Rooms({ changeRoom, socket }) {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    handleRooms()
+    handleRooms();
   }, []);
 
   useEffect(() => {
-    socket.on('new_room', res => {
-      console.log('FROM SERVER NEW ROOM ', res);
-      handleRooms()
+    socket.on('new_room', (res) => {
+      handleRooms();
     });
   }, []);
 
   useEffect(() => {
-    socket.on('delete_room', res => {
-      console.log('FROM SERVER NEW ROOM ', res);
-      handleRooms()
+    socket.on('delete_room', (res) => {
+      handleRooms();
     });
   }, []);
 
   function handleRooms() {
     return getRooms()
       .then((res) => {
-        console.log('resp data from ROOMS', res.data);
         setAllRooms(res.data);
       })
       .catch((err) => {
@@ -45,25 +42,20 @@ export default function Rooms({ changeRoom, socket }) {
       }
       return null;
     });
-    console.log('VALID IS ', isValid);
     return isValid;
   }
 
   function handleNewRoom(e) {
     e.preventDefault();
-    console.log('add room');
     let removedWhiteSpace = newRoom.trim();
 
     let isValidName = isNameUnique(removedWhiteSpace);
 
     if (isValidName) {
-      console.log(removedWhiteSpace);
       createRoom(removedWhiteSpace)
         .then((res) => {
-          console.log(res.data);
           setAllRooms([...allRooms, res.data]);
           setNewRoom('');
-          // handleRooms();
         })
         .catch((err) => {
           console.error(err);
@@ -79,7 +71,6 @@ export default function Rooms({ changeRoom, socket }) {
   function handleDeleteRoom(id) {
     deleteRoom(id)
       .then((res) => {
-        console.log(res);
         let allRoomsExceptDeleted = allRooms.filter((x) => {
           return x._id !== id;
         });
