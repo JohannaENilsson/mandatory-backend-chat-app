@@ -9,5 +9,5 @@ export default function Logout({ handleUserName, socket }) {
     socket.close();    
   }
 
-  return <button onClick={() => handleLogout()}>X</button>;
+  return <button style={{position: 'absolute', top: '15px', left: '15px'}} onClick={() => handleLogout()}>X</button>;
 }

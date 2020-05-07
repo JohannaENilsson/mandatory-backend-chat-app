@@ -82,8 +82,7 @@ export default function Rooms({ changeRoom, socket }) {
   }
 
   return (
-    <section>
-      <p>Handle Rooms</p>
+    <section className='container'>
       {error && <p>Give the room a unique name</p>}
       <form>
         <input

@@ -5,11 +5,36 @@
 .App {
   background-color: #282c34;
   min-height: 100vh;
+  width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  justify-content: space-around;
   color: white;
 }
 
+ul {
+  list-style: none;
+  padding-inline-start: 0;
+
+}
+
+li{
+  margin: 9px 30px;
+}
+
+
+.container{
+  border: 1px solid aqua;
+  padding: 20px;
+  width: 350px;
+  min-height: 400px;
+}
+
+h1 {
+  margin-block-start: 0;
+}
+
+span {
+  text-align: left;
+}

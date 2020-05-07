@@ -11,8 +11,7 @@ export default function WriteMsg({ handleSend }) {
   }
 
   return (
-    <section>
-      <form>
+    <form>
       <input
         type='text'
         minLength='1'
@@ -21,7 +20,6 @@ export default function WriteMsg({ handleSend }) {
         onChange={(e) => handleInputValue(e.target.value)}
       />
       <input type='submit' value='Send' onClick={(e) => submitMsg(e)} />
-      </form>
-    </section>
+    </form>
   );
 }

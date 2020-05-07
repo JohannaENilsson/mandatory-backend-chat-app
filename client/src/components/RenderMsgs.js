@@ -9,17 +9,13 @@ export default function RenderMsgs({ allMsgs }) {
   } else {
     messages = allMsgs.map((msg, idx) => {
       return (
-        <section key={idx}>
+        <li key={idx}>
           <span>{msg.from}: </span>
           <span>{msg.msg}</span>
-        </section>
+        </li>
       );
     });
   }
 
-  return (
-    <div className='msgContainer' aria-label={'message-container'}>
-      {messages}
-    </div>
-  );
+  return <><ul>{messages}</ul></>;
 }

@@ -8,7 +8,7 @@ import Rooms from './Rooms';
 export default function Chatview({ socket, from }) {
   const [roomMsg, setRoomMsg] = useImmer([]);
   const [roomName, setRoomName] = useState(null);
-  const [activeRoom, setActiveRoom] = useState();
+  const [activeRoom, setActiveRoom] = useState(null);
 
   function resetMsgArray() {
     setRoomMsg((draft) => {
@@ -67,14 +67,19 @@ export default function Chatview({ socket, from }) {
     <>
       <Rooms changeRoom={changeRoom} socket={socket} />
       {!activeRoom ? (
+        <section>
         <h1>{from} join a room</h1>
+        </section>
       ) : (
         <>
+        <section  className='container'>
           <h1>
-            Welcome {from} to this chat {roomName}
+            {from} you are in {roomName}
           </h1>
+          
           <WriteMsg handleSend={handleSend} />
           <RenderMsgs allMsgs={roomMsg} />
+          </section>
         </>
       )}
     </>

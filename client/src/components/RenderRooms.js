@@ -24,8 +24,8 @@ export default function RenderRooms({
   }
 
   return (
-    <section>
+    
       <ul>{rooms}</ul>
-    </section>
+    
   );
 }
